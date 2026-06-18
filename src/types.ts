@@ -100,4 +100,22 @@ export interface Kontrak {
   bendaharaNip?: string;
   bendaharaPangkatGolongan?: string;
   bendaharaJabatan?: string;
+  // Detail Input Uang Muka di Data Pembayaran
+  persenUangMuka?: number;
+  noPermohonanUm?: string;
+  tglPermohonanUm?: string;
+  noSuratPptkUm?: string;
+  tglSuratPptkUm?: string;
+  noKpaUm?: string;
+  tglKpaUm?: string;
+  noPernyataanRekananUm?: string;
+  tglPernyataanRekananUm?: string;
+  noPernyataanKpaUm?: string;
+  tglPernyataanKpaUm?: string;
+  noBaUm?: string;
+  tglBaUm?: string;
+  noSppUm?: string;
+  tglSppUm?: string;
+  noJaminanUm?: string;
+  tglJaminanUm?: string;
 }

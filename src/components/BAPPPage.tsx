@@ -45,6 +45,7 @@ export default function BAPPPage({
   const [editingKontrak, setEditingKontrak] = useState<Kontrak | null>(null);
   
   const [isTerminModalOpen, setIsTerminModalOpen] = useState(false);
+  const [isUmModalOpen, setIsUmModalOpen] = useState(false);
   const [printBappItem, setPrintBappItem] = useState<{ kontrak: Kontrak; bapp: BAPP } | null>(null);
 
   // Sub-halaman state inside contract popup
@@ -107,6 +108,85 @@ export default function BAPPPage({
   const [formNilaiPembayaran, setFormNilaiPembayaran] = useState<number | ''>('');
   const [formTglBapp, setFormTglBapp] = useState('');
   const [formPotonganUM, setFormPotonganUM] = useState<number | ''>('');
+
+  // New Uang Muka Details states for BAPP Page
+  const [formPersenUm, setFormPersenUm] = useState<number>(20);
+  const [formNoPermohonanUm, setFormNoPermohonanUm] = useState('');
+  const [formTglPermohonanUm, setFormTglPermohonanUm] = useState('');
+  const [formNoSuratPptkUm, setFormNoSuratPptkUm] = useState('');
+  const [formTglSuratPptkUm, setFormTglSuratPptkUm] = useState('');
+  const [formNoKpaUm, setFormNoKpaUm] = useState('');
+  const [formTglKpaUm, setFormTglKpaUm] = useState('');
+  const [formNoPernyataanRekananUm, setFormNoPernyataanRekananUm] = useState('');
+  const [formTglPernyataanRekananUm, setFormTglPernyataanRekananUm] = useState('');
+  const [formNoPernyataanKpaUm, setFormNoPernyataanKpaUm] = useState('');
+  const [formTglPernyataanKpaUm, setFormTglPernyataanKpaUm] = useState('');
+  const [formNoBaUm, setFormNoBaUm] = useState('');
+  const [formTglBaUm, setFormTglBaUm] = useState('');
+  const [formNoSppUm, setFormNoSppUm] = useState('');
+  const [formTglSppUm, setFormTglSppUm] = useState('');
+  const [formNoJaminanUm, setFormNoJaminanUm] = useState('');
+  const [formTglJaminanUm, setFormTglJaminanUm] = useState('');
+  const [showUmSavedToast, setShowUmSavedToast] = useState(false);
+
+  React.useEffect(() => {
+    if (selectedKontrak) {
+      setFormPersenUm(selectedKontrak.persenUangMuka !== undefined ? selectedKontrak.persenUangMuka : 20);
+      setFormNoPermohonanUm(selectedKontrak.noPermohonanUm || '');
+      setFormTglPermohonanUm(selectedKontrak.tglPermohonanUm || '');
+      setFormNoSuratPptkUm(selectedKontrak.noSuratPptkUm || '');
+      setFormTglSuratPptkUm(selectedKontrak.tglSuratPptkUm || '');
+      setFormNoKpaUm(selectedKontrak.noKpaUm || '');
+      setFormTglKpaUm(selectedKontrak.tglKpaUm || '');
+      setFormNoPernyataanRekananUm(selectedKontrak.noPernyataanRekananUm || '');
+      setFormTglPernyataanRekananUm(selectedKontrak.tglPernyataanRekananUm || '');
+      setFormNoPernyataanKpaUm(selectedKontrak.noPernyataanKpaUm || '');
+      setFormTglPernyataanKpaUm(selectedKontrak.tglPernyataanKpaUm || '');
+      setFormNoBaUm(selectedKontrak.noBaUm || '');
+      setFormTglBaUm(selectedKontrak.tglBaUm || '');
+      setFormNoSppUm(selectedKontrak.noSppUm || '');
+      setFormTglSppUm(selectedKontrak.tglSppUm || '');
+      setFormNoJaminanUm(selectedKontrak.noJaminanUm || '');
+      setFormTglJaminanUm(selectedKontrak.tglJaminanUm || '');
+    }
+  }, [selectedKontrak?.id]);
+
+  const handleSaveUangMukaData = () => {
+    if (!selectedKontrak) return;
+
+    const calculatedUangMuka = selectedKontrak.nilaiKontrak * (formPersenUm / 100);
+
+    const updatedKontrak: Kontrak = {
+      ...selectedKontrak,
+      persenUangMuka: formPersenUm,
+      uangMuka: calculatedUangMuka,
+      noPermohonanUm: formNoPermohonanUm,
+      tglPermohonanUm: formTglPermohonanUm,
+      noSuratPptkUm: formNoSuratPptkUm,
+      tglSuratPptkUm: formTglSuratPptkUm,
+      noKpaUm: formNoKpaUm,
+      tglKpaUm: formTglKpaUm,
+      noPernyataanRekananUm: formNoPernyataanRekananUm,
+      tglPernyataanRekananUm: formTglPernyataanRekananUm,
+      noPernyataanKpaUm: formNoPernyataanKpaUm,
+      tglPernyataanKpaUm: formTglPernyataanKpaUm,
+      noBaUm: formNoBaUm,
+      tglBaUm: formTglBaUm,
+      noSppUm: formNoSppUm,
+      tglSppUm: formTglSppUm,
+      noJaminanUm: formNoJaminanUm,
+      tglJaminanUm: formTglJaminanUm
+    };
+
+    onEditKontrak(updatedKontrak);
+    setSelectedKontrak(updatedKontrak);
+    setIsUmModalOpen(false);
+    
+    setShowUmSavedToast(true);
+    setTimeout(() => {
+      setShowUmSavedToast(false);
+    }, 4000);
+  };
 
   // Currency helpers
   const formatRupiah = (num: number) => {
@@ -704,8 +784,8 @@ export default function BAPPPage({
                         <div>
                           <span className="text-[9px] uppercase tracking-wider text-amber-800 font-extrabold block">Nilai Uang Muka Pokok</span>
                           <h4 className="text-lg font-black text-neutral-900 mt-1">{formatRupiah(selectedKontrak.uangMuka)}</h4>
-                          <span className="text-[10px] text-amber-900 font-medium">
-                            Sebesar <strong className="font-bold">{((selectedKontrak.uangMuka / selectedKontrak.nilaiKontrak) * 100 || 0).toFixed(1)}%</strong> dari total Kontrak.
+                          <span className="text-[10px] text-amber-900 font-medium font-sans block mt-1">
+                            Sebesar <strong className="font-bold">{formPersenUm.toFixed(1)}%</strong> dari total Kontrak.
                           </span>
                         </div>
 
@@ -756,6 +836,63 @@ export default function BAPPPage({
                           );
                         })()}
                       </div>
+                    </div>
+
+                    {/* SUMMARY OF DOWN PAYMENT ADMINISTRATION */}
+                    <div className="bg-white border border-neutral-200 rounded-xl p-4.5 shadow-xs space-y-4 font-sans text-left">
+                      <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3 border-b border-neutral-100 pb-3">
+                        <div className="text-left">
+                          <h5 className="font-bold text-neutral-800 text-xs uppercase tracking-wide">Pendaftaran & Administrasi Keabsahan Uang Muka</h5>
+                          <p className="text-[10.5px] text-neutral-500 font-sans font-medium">Informasi kelengkapan berkas pengajuan uang muka penyerapan.</p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setIsUmModalOpen(true)}
+                          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold transition-all shadow-xs flex items-center justify-center gap-1.5 cursor-pointer text-xs shrink-0 self-start sm:self-center"
+                        >
+                          <Plus className="w-4 h-4" />
+                          <span>Tambah Uang Muka</span>
+                        </button>
+                      </div>
+
+                      {/* Summary Grid of Document Numbers if they exist */}
+                      {selectedKontrak.noPermohonanUm || selectedKontrak.noBaUm || selectedKontrak.noJaminanUm ? (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 bg-neutral-50/55 p-3 rounded-xl border border-neutral-200 text-xs text-left">
+                          <div className="p-2.5 bg-white rounded-lg shadow-2xs border border-neutral-150">
+                            <span className="text-[9px] font-extrabold text-neutral-400 uppercase block">1. Permohonan Rekanan</span>
+                            <span className="font-bold text-neutral-800 block truncate mt-0.5" title={selectedKontrak.noPermohonanUm || 'Belum diinput'}>
+                              {selectedKontrak.noPermohonanUm || '-'}
+                            </span>
+                            <span className="text-[9px] text-neutral-500 font-mono mt-0.5 block">{selectedKontrak.tglPermohonanUm || '-'}</span>
+                          </div>
+                          <div className="p-2.5 bg-white rounded-lg shadow-2xs border border-neutral-150">
+                            <span className="text-[9px] font-extrabold text-neutral-400 uppercase block">2. Rekomendasi PPTK</span>
+                            <span className="font-bold text-neutral-800 block truncate mt-0.5" title={selectedKontrak.noSuratPptkUm || 'Belum diinput'}>
+                              {selectedKontrak.noSuratPptkUm || '-'}
+                            </span>
+                            <span className="text-[9px] text-neutral-500 font-mono mt-0.5 block">{selectedKontrak.tglSuratPptkUm || '-'}</span>
+                          </div>
+                          <div className="p-2.5 bg-white rounded-lg shadow-2xs border border-neutral-150">
+                            <span className="text-[9px] font-extrabold text-neutral-400 uppercase block">6. BA Uang Muka</span>
+                            <span className="font-bold text-neutral-800 block truncate mt-0.5" title={selectedKontrak.noBaUm || 'Belum diinput'}>
+                              {selectedKontrak.noBaUm || '-'}
+                            </span>
+                            <span className="text-[9px] text-neutral-500 font-mono mt-0.5 block">{selectedKontrak.tglBaUm || '-'}</span>
+                          </div>
+                          <div className="p-2.5 bg-white rounded-lg shadow-2xs border border-amber-200 bg-amber-50/20">
+                            <span className="text-[9px] font-extrabold text-amber-800 uppercase block">8. Jaminan Uang Muka</span>
+                            <span className="font-bold text-amber-950 block truncate mt-0.5" title={selectedKontrak.noJaminanUm || 'Belum diinput'}>
+                              {selectedKontrak.noJaminanUm || '-'}
+                            </span>
+                            <span className="text-[9px] text-amber-800 font-mono mt-0.5 block">{selectedKontrak.tglJaminanUm || '-'}</span>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="text-center py-6 border border-dashed border-neutral-300 rounded-xl bg-neutral-50 flex flex-col items-center justify-center space-y-1">
+                          <p className="text-[11px] text-neutral-500 italic">Belum ada berkas administrasi uang muka yang terdaftar.</p>
+                          <p className="text-[9.5px] text-neutral-450">Silakan klik tombol "Tambah Uang Muka" untuk mengisi atau merinci berkas kelayakan.</p>
+                        </div>
+                      )}
                     </div>
 
                     {/* Timeline of deductions */}
