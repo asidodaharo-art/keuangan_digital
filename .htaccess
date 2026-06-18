@@ -1,0 +1,31 @@
+# =====================================================================
+# CONFIGURATION URL ROUTING REWRITE ENGINE (PHP NATIVE ENVIRONMENT CODES)
+# =====================================================================
+# Diperlukan untuk mempercantik (pretty URL) routing aplikasi PHP Native.
+# Sangat cocok untuk deployment di Apache (InfinityFree / Shared Hosting / localhost).
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+
+    # Mencegah penelusuran direktori secara bebas demi keamanan
+    Options -Indexes
+
+    # Abaikan rewrite bila target folder atau file benar-benar ada di cakupan assets
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+
+    # Alihkan seluruh request non-file ke file router utama index.php
+    RewriteRule ^(.*)$ index.php?url=$1 [QSA,L]
+</IfModule>
+
+# Pengamanan file konfigurasi sensitif (.sql / .env / .json / .config)
+<FilesMatch "\.(db|sql|config|env|json|bak|config)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order deny,allow
+        Deny from all
+    </IfModule>
+</FilesMatch>
