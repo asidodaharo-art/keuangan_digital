@@ -121,6 +121,8 @@ export const defaultKontrak: Kontrak[] = [
     nilaiKontrak: 1200000000,
     tanggalKontrak: '2026-05-15',
     uangMuka: 240000000,
+    namaKegiatan: 'Rehabilitasi Mayor Jalan Protokol',
+    jangkaWaktu: '90 Hari Kalender',
     terminList: [
       {
         id: 'B1',
@@ -141,6 +143,8 @@ export const defaultKontrak: Kontrak[] = [
     nilaiKontrak: 2500000000,
     tanggalKontrak: '2026-05-20',
     uangMuka: 500000000,
+    namaKegiatan: 'Pembangunan Fisik Puskesmas Pembantu',
+    jangkaWaktu: '120 Hari Kalender',
     terminList: []
   }
 ];

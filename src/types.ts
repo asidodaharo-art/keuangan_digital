@@ -65,4 +65,39 @@ export interface Kontrak {
   tanggalKontrak: string;
   uangMuka: number;
   terminList: BAPP[];
+  namaKegiatan?: string;
+  jangkaWaktu?: string;
+  // Dokumen Pelengkap
+  noSppbj?: string;
+  tglSppbj?: string;
+  noSpmk?: string;
+  tglSpmk?: string;
+  noSpl?: string;
+  tglSpl?: string;
+  // Rekanan
+  rekananNamaPerusahaan?: string;
+  rekananNamaPengusaha?: string;
+  rekananJabatan?: string;
+  rekananAlamat?: string;
+  rekananNpwp?: string;
+  rekananFakturPajak?: string;
+  rekananNoJaminanPelaksanaan?: string;
+  rekananTglJaminanPelaksanaan?: string;
+  rekananBankNama?: string;
+  rekananNoRekening?: string;
+  // Pejabat KPA
+  kpaNama?: string;
+  kpaNip?: string;
+  kpaPangkatGolongan?: string;
+  kpaJabatan?: string;
+  // PPTK
+  pptkNama?: string;
+  pptkNip?: string;
+  pptkPangkatGolongan?: string;
+  pptkJabatan?: string;
+  // Bendahara
+  bendaharaNama?: string;
+  bendaharaNip?: string;
+  bendaharaPangkatGolongan?: string;
+  bendaharaJabatan?: string;
 }

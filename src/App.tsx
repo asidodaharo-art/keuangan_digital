@@ -455,6 +455,7 @@ export default function App() {
                 <BAPPPage 
                   kontrakList={kontrakList} 
                   instansiField={instansi} 
+                  masterList={masterData}
                   onAddKontrak={handleAddKontrak} 
                   onEditKontrak={handleEditKontrak} 
                   onDeleteKontrak={handleDeleteKontrak} 
