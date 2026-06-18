@@ -118,4 +118,29 @@ export interface Kontrak {
   tglSppUm?: string;
   noJaminanUm?: string;
   tglJaminanUm?: string;
+  // Addendum Kontrak
+  hasAddendum1?: boolean;
+  noAddendum1?: string;
+  tglAddendum1?: string;
+  nilaiAddendum1?: number;
+  hasAddendum2?: boolean;
+  noAddendum2?: string;
+  tglAddendum2?: string;
+  nilaiAddendum2?: number;
+  hasAddendum3?: boolean;
+  noAddendum3?: string;
+  tglAddendum3?: string;
+  nilaiAddendum3?: number;
+  addendums?: AddendumItem[];
 }
+
+export interface AddendumItem {
+  id: string;
+  isAktif: boolean;
+  nama: string; // e.g. "Addendum I", "Addendum II", "Addendum III", "Addendum IV", etc.
+  nomor: string;
+  tanggal: string;
+  nilai: number | '';
+  keteranganPerubahan?: string;
+}
+

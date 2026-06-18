@@ -4,8 +4,8 @@
  */
 
 import React, { useState } from 'react';
-import { Search, Plus, Edit2, Trash2, Printer, Landmark, FileCheck, X, Check, Eye, HelpCircle, FileText, Coins, Layers, CreditCard, Users, Briefcase, ShieldAlert } from 'lucide-react';
-import { Kontrak, BAPP, Instansi, MasterData } from '../types';
+import { Search, Plus, Edit2, Trash2, Printer, Landmark, FileCheck, X, Check, Eye, HelpCircle, FileText, Coins, Layers, CreditCard, Users, Briefcase, ShieldAlert, FileSpreadsheet } from 'lucide-react';
+import { Kontrak, BAPP, Instansi, MasterData, AddendumItem } from '../types';
 import { defaultMasterData } from '../data';
 
 interface BAPPPageProps {
@@ -101,6 +101,44 @@ export default function BAPPPage({
   const [formBendaharaNip, setFormBendaharaNip] = useState('');
   const [formBendaharaPangkatGolongan, setFormBendaharaPangkatGolongan] = useState('');
   const [formBendaharaJabatan, setFormBendaharaJabatan] = useState('');
+
+  // Addendum Kontrak states
+  const [formHasAddendum1, setFormHasAddendum1] = useState(false);
+  const [formNoAddendum1, setFormNoAddendum1] = useState('');
+  const [formTglAddendum1, setFormTglAddendum1] = useState('');
+  const [formNilaiAddendum1, setFormNilaiAddendum1] = useState<number | ''>('');
+
+  const [formHasAddendum2, setFormHasAddendum2] = useState(false);
+  const [formNoAddendum2, setFormNoAddendum2] = useState('');
+  const [formTglAddendum2, setFormTglAddendum2] = useState('');
+  const [formNilaiAddendum2, setFormNilaiAddendum2] = useState<number | ''>('');
+
+  const [formHasAddendum3, setFormHasAddendum3] = useState(false);
+  const [formNoAddendum3, setFormNoAddendum3] = useState('');
+  const [formTglAddendum3, setFormTglAddendum3] = useState('');
+  const [formNilaiAddendum3, setFormNilaiAddendum3] = useState<number | ''>('');
+
+  const [formAddendums, setFormAddendums] = useState<AddendumItem[]>([]);
+
+  const getLatestValue = (k: Kontrak) => {
+    const list: number[] = [];
+    if (k.hasAddendum1 && k.nilaiAddendum1 !== undefined && k.nilaiAddendum1 !== 0) list.push(k.nilaiAddendum1);
+    if (k.hasAddendum2 && k.nilaiAddendum2 !== undefined && k.nilaiAddendum2 !== 0) list.push(k.nilaiAddendum2);
+    if (k.hasAddendum3 && k.nilaiAddendum3 !== undefined && k.nilaiAddendum3 !== 0) list.push(k.nilaiAddendum3);
+    
+    if (Array.isArray(k.addendums)) {
+      k.addendums.forEach(item => {
+        if (item.isAktif && item.nilai !== undefined && item.nilai !== '' && item.nilai !== 0) {
+          list.push(Number(item.nilai));
+        }
+      });
+    }
+
+    if (list.length > 0) {
+      return list[list.length - 1];
+    }
+    return k.nilaiKontrak;
+  };
 
   // Form states for BAPP Termin
   const [formNoBapp, setFormNoBapp] = useState('');
@@ -236,6 +274,23 @@ export default function BAPPPage({
     setFormBendaharaPangkatGolongan('');
     setFormBendaharaJabatan('');
 
+    setFormHasAddendum1(false);
+    setFormNoAddendum1('');
+    setFormTglAddendum1('');
+    setFormNilaiAddendum1('');
+
+    setFormHasAddendum2(false);
+    setFormNoAddendum2('');
+    setFormTglAddendum2('');
+    setFormNilaiAddendum2('');
+
+    setFormHasAddendum3(false);
+    setFormNoAddendum3('');
+    setFormTglAddendum3('');
+    setFormNilaiAddendum3('');
+
+    setFormAddendums([]);
+
     setPopupActiveTab('kontrak');
     setEditingKontrak(null);
   };
@@ -287,6 +342,57 @@ export default function BAPPPage({
     setFormBendaharaNip(k.bendaharaNip || '');
     setFormBendaharaPangkatGolongan(k.bendaharaPangkatGolongan || '');
     setFormBendaharaJabatan(k.bendaharaJabatan || '');
+
+    setFormHasAddendum1(!!k.hasAddendum1);
+    setFormNoAddendum1(k.noAddendum1 || '');
+    setFormTglAddendum1(k.tglAddendum1 || '');
+    setFormNilaiAddendum1(k.nilaiAddendum1 !== undefined ? k.nilaiAddendum1 : '');
+
+    setFormHasAddendum2(!!k.hasAddendum2);
+    setFormNoAddendum2(k.noAddendum2 || '');
+    setFormTglAddendum2(k.tglAddendum2 || '');
+    setFormNilaiAddendum2(k.nilaiAddendum2 !== undefined ? k.nilaiAddendum2 : '');
+
+    setFormHasAddendum3(!!k.hasAddendum3);
+    setFormNoAddendum3(k.noAddendum3 || '');
+    setFormTglAddendum3(k.tglAddendum3 || '');
+    setFormNilaiAddendum3(k.nilaiAddendum3 !== undefined ? k.nilaiAddendum3 : '');
+
+    const legacyAddendums: AddendumItem[] = [];
+    if (k.hasAddendum1) {
+      legacyAddendums.push({
+        id: 'legacy-1',
+        isAktif: true,
+        nama: 'Addendum I',
+        nomor: k.noAddendum1 || '',
+        tanggal: k.tglAddendum1 || '',
+        nilai: k.nilaiAddendum1 !== undefined ? k.nilaiAddendum1 : ''
+      });
+    }
+    if (k.hasAddendum2) {
+      legacyAddendums.push({
+        id: 'legacy-2',
+        isAktif: true,
+        nama: 'Addendum II',
+        nomor: k.noAddendum2 || '',
+        tanggal: k.tglAddendum2 || '',
+        nilai: k.nilaiAddendum2 !== undefined ? k.nilaiAddendum2 : ''
+      });
+    }
+    if (k.hasAddendum3) {
+      legacyAddendums.push({
+        id: 'legacy-3',
+        isAktif: true,
+        nama: 'Addendum III',
+        nomor: k.noAddendum3 || '',
+        tanggal: k.tglAddendum3 || '',
+        nilai: k.nilaiAddendum3 !== undefined ? k.nilaiAddendum3 : ''
+      });
+    }
+
+    const existingAddendums = Array.isArray(k.addendums) ? k.addendums : [];
+    const finalAddendums = existingAddendums.length > 0 ? existingAddendums : legacyAddendums;
+    setFormAddendums(finalAddendums);
 
     setPopupActiveTab('kontrak');
     setIsKontrakModalOpen(true);
@@ -340,6 +446,19 @@ export default function BAPPPage({
         bendaharaNip: formBendaharaNip,
         bendaharaPangkatGolongan: formBendaharaPangkatGolongan,
         bendaharaJabatan: formBendaharaJabatan,
+        hasAddendum1: formHasAddendum1,
+        noAddendum1: formNoAddendum1,
+        tglAddendum1: formTglAddendum1,
+        nilaiAddendum1: formNilaiAddendum1 === '' ? undefined : Number(formNilaiAddendum1),
+        hasAddendum2: formHasAddendum2,
+        noAddendum2: formNoAddendum2,
+        tglAddendum2: formTglAddendum2,
+        nilaiAddendum2: formNilaiAddendum2 === '' ? undefined : Number(formNilaiAddendum2),
+        hasAddendum3: formHasAddendum3,
+        noAddendum3: formNoAddendum3,
+        tglAddendum3: formTglAddendum3,
+        nilaiAddendum3: formNilaiAddendum3 === '' ? undefined : Number(formNilaiAddendum3),
+        addendums: formAddendums,
       });
       // Update selected item state
       setTimeout(() => {
@@ -383,6 +502,19 @@ export default function BAPPPage({
         bendaharaNip: formBendaharaNip,
         bendaharaPangkatGolongan: formBendaharaPangkatGolongan,
         bendaharaJabatan: formBendaharaJabatan,
+        hasAddendum1: formHasAddendum1,
+        noAddendum1: formNoAddendum1,
+        tglAddendum1: formTglAddendum1,
+        nilaiAddendum1: formNilaiAddendum1 === '' ? undefined : Number(formNilaiAddendum1),
+        hasAddendum2: formHasAddendum2,
+        noAddendum2: formNoAddendum2,
+        tglAddendum2: formTglAddendum2,
+        nilaiAddendum2: formNilaiAddendum2 === '' ? undefined : Number(formNilaiAddendum2),
+        hasAddendum3: formHasAddendum3,
+        noAddendum3: formNoAddendum3,
+        tglAddendum3: formTglAddendum3,
+        nilaiAddendum3: formNilaiAddendum3 === '' ? undefined : Number(formNilaiAddendum3),
+        addendums: formAddendums,
       });
     }
 
@@ -530,7 +662,8 @@ export default function BAPPPage({
                 filteredKontrak.map((k, index) => {
                   const isSelected = selectedKontrak?.id === k.id;
                   const totalPaid = k.terminList.reduce((sum, t) => sum + t.nilaiPembayaran, 0);
-                  const percentProgress = k.nilaiKontrak > 0 ? (totalPaid / k.nilaiKontrak) * 100 : 0;
+                  const latestVal = getLatestValue(k);
+                  const percentProgress = latestVal > 0 ? (totalPaid / latestVal) * 100 : 0;
 
                   // Define dynamic soft background themes for each contract so that they are visually distinct
                   // Index-based coloring to satisfy "warna background berbeda setiap ada data baru"
@@ -601,7 +734,12 @@ export default function BAPPPage({
                       
                       <div className="flex justify-between items-center text-xs mt-3">
                         <span className="text-neutral-500 font-medium font-sans">Nilai Kontrak:</span>
-                        <strong className={currentTheme.text}>{formatRupiah(k.nilaiKontrak)}</strong>
+                        <strong className={currentTheme.text}>
+                          {formatRupiah(getLatestValue(k))}
+                          {getLatestValue(k) !== k.nilaiKontrak && (
+                            <span className="text-[9px] text-amber-600 block text-right font-normal leading-none">(Amandemen)</span>
+                          )}
+                        </strong>
                       </div>
 
                       <div className="mt-2.5">
@@ -665,9 +803,62 @@ export default function BAPPPage({
                       <table className="w-full text-left font-sans">
                         <tbody>
                           <tr className="border-b border-neutral-205/60 py-1">
-                            <td className="py-1.5 text-neutral-500">Nilai Kontrak (Pagu)</td>
+                            <td className="py-1.5 text-neutral-500">Nilai Kontrak (Awal)</td>
                             <td className="py-1.5 text-right font-bold text-neutral-900">{formatRupiah(selectedKontrak.nilaiKontrak)}</td>
                           </tr>
+                          {selectedKontrak.hasAddendum1 && (
+                            <tr className="border-b border-neutral-205/60 py-1 bg-amber-50/15">
+                              <td className="py-1.5 text-neutral-500 font-medium text-amber-800">Addendum I</td>
+                              <td className="py-1.5 text-right font-bold text-neutral-900">
+                                {selectedKontrak.nilaiAddendum1 ? formatRupiah(selectedKontrak.nilaiAddendum1) : '-'}
+                                <span className="block text-[8.5px] text-neutral-450 font-mono font-medium leading-none mt-0.5">No: {selectedKontrak.noAddendum1 || '-'} ({selectedKontrak.tglAddendum1 || '-'})</span>
+                              </td>
+                            </tr>
+                          )}
+                          {selectedKontrak.hasAddendum2 && (
+                            <tr className="border-b border-neutral-205/60 py-1 bg-amber-50/15">
+                              <td className="py-1.5 text-neutral-500 font-medium text-amber-800">Addendum II</td>
+                              <td className="py-1.5 text-right font-bold text-neutral-900">
+                                {selectedKontrak.nilaiAddendum2 ? formatRupiah(selectedKontrak.nilaiAddendum2) : '-'}
+                                <span className="block text-[8.5px] text-neutral-450 font-mono font-medium leading-none mt-0.5">No: {selectedKontrak.noAddendum2 || '-'} ({selectedKontrak.tglAddendum2 || '-'})</span>
+                              </td>
+                            </tr>
+                          )}
+                          {selectedKontrak.hasAddendum3 && (
+                            <tr className="border-b border-neutral-205/60 py-1 bg-amber-50/15">
+                              <td className="py-1.5 text-neutral-500 font-medium text-amber-800">Addendum III</td>
+                              <td className="py-1.5 text-right font-bold text-neutral-900">
+                                {selectedKontrak.nilaiAddendum3 ? formatRupiah(selectedKontrak.nilaiAddendum3) : '-'}
+                                <span className="block text-[8.5px] text-neutral-450 font-mono font-medium leading-none mt-0.5">No: {selectedKontrak.noAddendum3 || '-'} ({selectedKontrak.tglAddendum3 || '-'})</span>
+                              </td>
+                            </tr>
+                          )}
+                          {Array.isArray(selectedKontrak.addendums) && selectedKontrak.addendums.map((item) => {
+                            if (!item.isAktif) return null;
+                            return (
+                              <tr key={item.id} className="border-b border-neutral-205/60 py-2 bg-amber-50/15">
+                                <td className="py-2 text-neutral-500 font-medium text-amber-800 pr-2">
+                                  <div className="font-bold">{item.nama}</div>
+                                  {item.keteranganPerubahan && (
+                                    <div className="text-[10px] text-neutral-550 font-sans font-normal leading-relaxed mt-1 bg-amber-50/30 border border-amber-200/40 p-1.5 rounded-lg max-w-[210px] break-words">
+                                      <span className="font-semibold text-amber-900/90 text-[9px] uppercase tracking-wider block mb-0.5">Uraian Perubahan:</span>
+                                      {item.keteranganPerubahan}
+                                    </div>
+                                  )}
+                                </td>
+                                <td className="py-2 text-right font-bold text-neutral-900 align-top">
+                                  {item.nilai ? formatRupiah(Number(item.nilai)) : '-'}
+                                  <span className="block text-[8.5px] text-neutral-450 font-mono font-medium leading-none mt-1">No: {item.nomor || '-'} ({item.tanggal || '-'})</span>
+                                </td>
+                              </tr>
+                            );
+                          })}
+                          {getLatestValue(selectedKontrak) !== selectedKontrak.nilaiKontrak && (
+                            <tr className="border-b border-neutral-205/60 py-1 bg-blue-50/20">
+                              <td className="py-1.5 text-blue-900 font-bold">Total Nilai Akhir</td>
+                              <td className="py-1.5 text-right font-black text-blue-105">{formatRupiah(getLatestValue(selectedKontrak))}</td>
+                            </tr>
+                          )}
                           <tr className="border-b border-neutral-205/60 py-1">
                             <td className="py-1.5 text-neutral-500">Nilai Uang Muka diserahkan</td>
                             <td className="py-1.5 text-right font-bold text-amber-700">{formatRupiah(selectedKontrak.uangMuka)}</td>
@@ -713,8 +904,9 @@ export default function BAPPPage({
                     <p className="text-[11px] text-neutral-500 mb-3">Realisasi kumulatif fisik & administrasi yang terdaftar di dalam sistem.</p>
                     {(() => {
                       const totalPaid = selectedKontrak.terminList.reduce((sum, t) => sum + t.nilaiPembayaran, 0);
-                      const sisa = selectedKontrak.nilaiKontrak - totalPaid;
-                      const percentProgress = selectedKontrak.nilaiKontrak > 0 ? (totalPaid / selectedKontrak.nilaiKontrak) * 100 : 0;
+                      const valK = getLatestValue(selectedKontrak);
+                      const sisa = valK - totalPaid;
+                      const percentProgress = valK > 0 ? (totalPaid / valK) * 100 : 0;
                       return (
                         <div className="space-y-2">
                           <div className="flex justify-between font-mono text-xs text-neutral-600">
@@ -742,7 +934,12 @@ export default function BAPPPage({
                   </div>
                   <div className="text-right sm:text-right">
                     <span className="text-[9px] uppercase font-bold text-neutral-400 block tracking-wider">NILAI PAGU KONTRAK</span>
-                    <strong className="text-xs text-neutral-950 font-bold block">{formatRupiah(selectedKontrak.nilaiKontrak)}</strong>
+                    <strong className="text-xs text-neutral-950 font-bold block">
+                      {formatRupiah(getLatestValue(selectedKontrak))}
+                      {getLatestValue(selectedKontrak) !== selectedKontrak.nilaiKontrak && (
+                        <span className="text-[8.5px] text-amber-700 bg-amber-100 px-1 py-0.5 rounded ml-1 font-extrabold uppercase font-sans">addendum</span>
+                      )}
+                    </strong>
                   </div>
                 </div>
 
@@ -1234,6 +1431,182 @@ export default function BAPPPage({
                               );
                             }
                           })()}
+                        </div>
+                      </div>
+
+                      {/* ADDENDUM KONTRAK SECTION */}
+                      <div className="border-t border-neutral-100 pt-4 mt-2 grid grid-cols-1 gap-3">
+                        <div className="bg-neutral-50 p-4 rounded-xl border border-neutral-200">
+                          <h4 className="text-[11px] font-extrabold text-neutral-800 uppercase tracking-wider mb-2 flex items-center gap-1.5 font-sans">
+                            <FileSpreadsheet className="w-4 h-4 text-blue-600 animate-pulse" />
+                            <span>Addendum Kontrak Kerja (Bila Ada)</span>
+                          </h4>
+                          <p className="text-[10px] text-neutral-500 mb-4 font-sans leading-relaxed">Tambahkan rincian di bawah ini jika kontrak kerja ini mengalami perubahan adendum (nomor, tgl, nilai terbaru, dan keterangan perubahan).</p>
+
+                          <div className="space-y-4 font-sans">
+                            {formAddendums.length === 0 && (
+                              <div className="text-center py-6 border border-dashed border-neutral-300 rounded-xl bg-white">
+                                <HelpCircle className="w-8 h-8 text-neutral-300 mx-auto mb-1.5" />
+                                <p className="text-[10px] font-bold text-neutral-400 text-neutral-400/90 uppercase tracking-wider">Belum Ada Addendum Kontrak</p>
+                                <p className="text-[9px] text-neutral-450 mt-1">Dokumen ini belum mengalami amandemen nilai, nomor, maupun jangka waktu.</p>
+                              </div>
+                            )}
+
+                            {/* Dynamic Addendums (I, II, III, IV, etc.) */}
+                            {formAddendums.map((item, idx) => (
+                              <div key={item.id} className="p-3.5 rounded-xl border transition-all text-left bg-blue-50/50 border-blue-200 shadow-3xs">
+                                <div className="flex items-center justify-between mb-2">
+                                  <div className="flex items-center gap-2">
+                                    <input
+                                      type="checkbox"
+                                      id={`has-${item.id}`}
+                                      checked={item.isAktif}
+                                      onChange={(e) => {
+                                        const updated = [...formAddendums];
+                                        updated[idx] = { ...item, isAktif: e.target.checked };
+                                        setFormAddendums(updated);
+                                      }}
+                                      className="hidden"
+                                    />
+                                    <span className="text-xs font-extrabold text-neutral-800 uppercase tracking-widest flex items-center gap-1.5">
+                                      <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></span>
+                                      {item.nama}
+                                    </span>
+                                  </div>
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      const updated = formAddendums.filter(x => x.id !== item.id);
+                                      const romanizeLocal = (num: number) => {
+                                        const lookup: {[key: string]: number} = {M:1000,CM:900,D:500,CD:400,C:100,XC:90,L:50,XL:40,X:10,IX:9,V:5,IV:4,I:1};
+                                        let roman = '', i;
+                                        for (i in lookup) {
+                                          while (num >= lookup[i]) {
+                                            roman += i;
+                                            num -= lookup[i];
+                                          }
+                                        }
+                                        return roman;
+                                      };
+                                      const mapped = updated.map((x, subIdx) => ({
+                                        ...x,
+                                        nama: `Addendum ${romanizeLocal(1 + subIdx)}`
+                                      }));
+                                      setFormAddendums(mapped);
+                                    }}
+                                    className="p-1 px-2 text-rose-650 hover:text-rose-800 rounded-lg hover:bg-rose-50 transition-colors cursor-pointer flex items-center gap-1 border border-transparent hover:border-rose-200"
+                                    title="Hapus Addendum"
+                                  >
+                                    <Trash2 className="w-3.5 h-3.5" />
+                                    <span className="text-[10px] font-bold">Hapus</span>
+                                  </button>
+                                </div>
+
+                                {item.isAktif && (
+                                  <div className="space-y-3 pt-2.5 border-t border-blue-105/50 mt-2 animate-fade-in">
+                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                      <div>
+                                        <label className="text-[9px] font-bold text-neutral-500 block mb-1">Nomor {item.nama}</label>
+                                        <input
+                                          type="text"
+                                          placeholder={`Contoh nomor ${item.nama}`}
+                                          value={item.nomor}
+                                          onChange={(e) => {
+                                            const updated = [...formAddendums];
+                                            updated[idx] = { ...item, nomor: e.target.value };
+                                            setFormAddendums(updated);
+                                          }}
+                                          className="w-full text-xs px-2.5 py-1.5 border border-neutral-300 bg-white rounded-md outline-none focus:border-blue-500 font-medium font-sans"
+                                        />
+                                      </div>
+                                      <div>
+                                        <label className="text-[9px] font-bold text-neutral-500 block mb-1">Tanggal {item.nama}</label>
+                                        <input
+                                          type="date"
+                                          value={item.tanggal}
+                                          onChange={(e) => {
+                                            const updated = [...formAddendums];
+                                            updated[idx] = { ...item, tanggal: e.target.value };
+                                            setFormAddendums(updated);
+                                          }}
+                                          className="w-full text-xs px-2.5 py-1.5 border border-neutral-300 bg-white rounded-md outline-none focus:border-blue-500 font-medium text-neutral-700 font-sans"
+                                        />
+                                      </div>
+                                      <div>
+                                        <label className="text-[9px] font-bold text-neutral-500 block mb-1">Nilai {item.nama}</label>
+                                        <div className="relative">
+                                          <span className="absolute left-2.5 top-1.5 text-xs text-neutral-400 font-bold">Rp</span>
+                                          <input
+                                            type="number"
+                                            placeholder="Contoh: 1400000000"
+                                            value={item.nilai}
+                                            onChange={(e) => {
+                                              const updated = [...formAddendums];
+                                              updated[idx] = { ...item, nilai: e.target.value === '' ? '' : Number(e.target.value) };
+                                              setFormAddendums(updated);
+                                            }}
+                                            className="w-full text-xs pl-8 pr-2.5 py-1.5 border border-neutral-300 bg-white rounded-md outline-none focus:border-blue-500 font-extrabold text-blue-900 font-sans"
+                                          />
+                                        </div>
+                                      </div>
+                                    </div>
+
+                                    <div>
+                                      <label className="text-[9px] font-bold text-neutral-500 block mb-1">Keterangan / Jenis Perubahan dari Uraian Kontrak</label>
+                                      <input
+                                        type="text"
+                                        placeholder="Contoh: Perubahan volume pekerjaan tanah lapen, penambahan waktu pelaksanaan +20 hari, atau amandemen spesifikasi teknis."
+                                        value={item.keteranganPerubahan || ''}
+                                        onChange={(e) => {
+                                          const updated = [...formAddendums];
+                                          updated[idx] = { ...item, keteranganPerubahan: e.target.value };
+                                          setFormAddendums(updated);
+                                        }}
+                                        className="w-full text-xs px-2.5 py-1.5 border border-neutral-300 bg-white rounded-md outline-none focus:border-blue-500 text-neutral-800 font-sans font-medium"
+                                      />
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            ))}
+
+                            {/* Button to add another addendum */}
+                            <div className="flex justify-center pt-2">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const nextNum = 1 + formAddendums.length;
+                                  const romanizeLocal = (num: number) => {
+                                    const lookup: {[key: string]: number} = {M:1000,CM:900,D:500,CD:400,C:100,XC:90,L:50,XL:40,X:10,IX:9,V:5,IV:4,I:1};
+                                    let roman = '', i;
+                                    for (i in lookup) {
+                                      while (num >= lookup[i]) {
+                                        roman += i;
+                                        num -= lookup[i];
+                                      }
+                                    }
+                                    return roman;
+                                  };
+                                  const romanNum = romanizeLocal(nextNum);
+                                  const newAddendum = {
+                                    id: `addendum-dyn-${Date.now()}`,
+                                    isAktif: true,
+                                    nama: `Addendum ${romanNum}`,
+                                    nomor: '',
+                                    tanggal: '',
+                                    nilai: '',
+                                    keteranganPerubahan: ''
+                                  };
+                                  setFormAddendums([...formAddendums, newAddendum]);
+                                }}
+                                className="inline-flex items-center gap-1.5 px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-bold rounded-xl border border-blue-200 transition-colors cursor-pointer shadow-3xs"
+                              >
+                                <Plus className="w-4 h-4" />
+                                <span>Tambah Addendum Baru {formAddendums.length > 0 ? `(ke-${1 + formAddendums.length})` : ''}</span>
+                              </button>
+                            </div>
+
+                          </div>
                         </div>
                       </div>
 
