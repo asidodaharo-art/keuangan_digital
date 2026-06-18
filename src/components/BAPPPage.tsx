@@ -778,6 +778,22 @@ export default function BAPPPage({
                 {activePaymentTab === 'uangmuka' ? (
                   /* DATA UANG MUKA */
                   <div className="space-y-4 text-xs">
+                    {/* BUTTON BAR PINDAH KE ATAS */}
+                    <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3 bg-white border border-neutral-200 rounded-xl p-4 shadow-2xs">
+                      <div className="text-left font-sans">
+                        <h5 className="font-bold text-neutral-800 text-xs uppercase tracking-wide">Pendaftaran & Administrasi Keabsahan Uang Muka</h5>
+                        <p className="text-[10.5px] text-neutral-500 font-medium">Lengkapi No. & Tgl. berkas kelengkapan pengajuan dana uang muka penyerapan.</p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setIsUmModalOpen(true)}
+                        className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold transition-all shadow-xs flex items-center justify-center gap-1.5 cursor-pointer text-xs shrink-0 self-start sm:self-center"
+                      >
+                        <Plus className="w-4 h-4" />
+                        <span>Tambah Uang Muka</span>
+                      </button>
+                    </div>
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {/* Left: Uang muka main KPI */}
                       <div className="bg-amber-50/50 p-4 rounded-xl border border-amber-100 flex flex-col justify-between">
@@ -842,17 +858,9 @@ export default function BAPPPage({
                     <div className="bg-white border border-neutral-200 rounded-xl p-4.5 shadow-xs space-y-4 font-sans text-left">
                       <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3 border-b border-neutral-100 pb-3">
                         <div className="text-left">
-                          <h5 className="font-bold text-neutral-800 text-xs uppercase tracking-wide">Pendaftaran & Administrasi Keabsahan Uang Muka</h5>
+                          <h5 className="font-bold text-neutral-800 text-xs uppercase tracking-wide">Kelayakan Berkas Uang Muka</h5>
                           <p className="text-[10.5px] text-neutral-500 font-sans font-medium">Informasi kelengkapan berkas pengajuan uang muka penyerapan.</p>
                         </div>
-                        <button
-                          type="button"
-                          onClick={() => setIsUmModalOpen(true)}
-                          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold transition-all shadow-xs flex items-center justify-center gap-1.5 cursor-pointer text-xs shrink-0 self-start sm:self-center"
-                        >
-                          <Plus className="w-4 h-4" />
-                          <span>Tambah Uang Muka</span>
-                        </button>
                       </div>
 
                       {/* Summary Grid of Document Numbers if they exist */}
@@ -1869,6 +1877,353 @@ export default function BAPPPage({
                   <strong className="block underline">Direktur Pelaksana Jasa</strong>
                   <span className="text-[10px] text-neutral-500 block">Materai Cukup 10000 Dilunasi</span>
                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL PENDAFTARAN & ADMINISTRASI KEABSAHAN UANG MUKA */}
+      {isUmModalOpen && (
+        <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-neutral-900/60 backdrop-blur-xs overflow-y-auto">
+          <div className="absolute inset-0" onClick={() => setIsUmModalOpen(false)} />
+          
+          <div className="bg-white rounded-xl shadow-2xl border border-neutral-200 max-w-4xl w-full z-10 my-8 overflow-hidden flex flex-col animate-scale-up font-sans">
+            {/* Header */}
+            <div className="bg-neutral-900 px-5 py-4 flex justify-between items-center text-white shrink-0">
+              <div className="text-left">
+                <h3 className="text-sm font-bold uppercase tracking-wider flex items-center gap-2">
+                  <CreditCard className="w-4 h-4 text-amber-500" />
+                  Pendaftaran & Administrasi Keabsahan Uang Muka
+                </h3>
+                <p className="text-[10px] text-neutral-400 mt-0.5">Lengkapi data parameter dan nomor/tanggal berkas kelayakan uang muka.</p>
+              </div>
+              <button 
+                onClick={() => setIsUmModalOpen(false)} 
+                className="p-1.5 text-neutral-400 hover:text-white hover:bg-neutral-800 rounded-lg transition-all cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Inner Content Scroller */}
+            <div className="p-6 overflow-y-auto max-h-[75vh] space-y-5 bg-neutral-50/50">
+              {/* Parameter & Info Box */}
+              <div className="bg-gradient-to-r from-blue-500/10 to-indigo-500/5 p-4.5 rounded-xl border border-blue-100/50 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div className="w-full md:w-2/5 text-left">
+                  <label className="text-[10px] font-extrabold text-blue-900 uppercase tracking-wider block mb-1">
+                    % Persentase Uang Muka *
+                  </label>
+                  <div className="relative max-w-[200px]">
+                    <input
+                      type="number"
+                      min="0"
+                      max="100"
+                      value={formPersenUm}
+                      onChange={(e) => {
+                        const val = e.target.value === '' ? 0 : Number(e.target.value);
+                        setFormPersenUm(val);
+                      }}
+                      className="w-full text-sm font-extrabold px-3 py-2 border border-neutral-300 rounded-lg outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-white"
+                      placeholder="20"
+                    />
+                    <span className="absolute right-3 top-2.5 text-xs font-bold text-neutral-400">%</span>
+                  </div>
+                  <p className="text-[8.5px] text-neutral-500 mt-1 font-medium">Sesuai aturan, maksimum penarikan senilai 20% s/d 30% dari nilai kontrak.</p>
+                </div>
+                
+                <div className="w-full md:w-3/5 flex flex-col justify-end text-left md:text-right font-sans border-t md:border-t-0 pt-3 md:pt-0 border-neutral-200">
+                  <span className="text-[9px] uppercase tracking-wider text-neutral-400 font-extrabold block">Hasil Perhitungan Uang Muka</span>
+                  <div className="text-xs mt-0.5 text-neutral-600">
+                    Nilai Pagu <span className="font-mono font-bold">{formatRupiah(selectedKontrak?.nilaiKontrak || 0)}</span> &times; <strong className="text-neutral-800 font-mono font-black">{formPersenUm}%</strong>
+                  </div>
+                  <div className="text-xl font-black text-blue-700 font-mono mt-1">
+                    {formatRupiah((selectedKontrak?.nilaiKontrak || 0) * (formPersenUm / 100))}
+                  </div>
+                  <span className="text-[9px] text-neutral-400 italic">(Faktur pencairan pertama yang diterbitkan kepada rekanan/penyedia)</span>
+                </div>
+              </div>
+
+              {/* Grid 8 Documents */}
+              <div>
+                <h4 className="text-[11px] font-black text-neutral-800 uppercase tracking-wider mb-3 block border-b border-neutral-200 pb-1.5 text-left">
+                  Kelengkapan Berkas Administrasi Penyaluran
+                </h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-sans text-left">
+                  
+                  {/* 1. Permohonan */}
+                  <div className="bg-white p-3 rounded-lg border border-neutral-200 shadow-2xs text-left">
+                    <span className="text-[10px] font-extrabold text-neutral-700 uppercase tracking-wider block mb-2 border-b border-neutral-100 pb-1 w-full">
+                      1. Permohonan Rekanan / Penyedia
+                    </span>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      <div>
+                        <label className="text-[9px] font-bold text-neutral-450 block mb-0.5">No. Permohonan</label>
+                        <input
+                          type="text"
+                          placeholder="Nomor Surat"
+                          value={formNoPermohonanUm}
+                          onChange={(e) => setFormNoPermohonanUm(e.target.value)}
+                          className="w-full text-xs px-2.5 py-1.5 border border-neutral-300 rounded-md outline-none focus:border-blue-500 font-medium bg-neutral-50/30"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-[9px] font-bold text-neutral-450 block mb-0.5">Tanggal Permohonan</label>
+                        <input
+                          type="date"
+                          value={formTglPermohonanUm}
+                          onChange={(e) => setFormTglPermohonanUm(e.target.value)}
+                          className="w-full text-xs px-2 py-1 border border-neutral-300 rounded-md outline-none focus:border-blue-500 font-mono text-neutral-700 bg-neutral-50/30"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 2. Surat PPTK */}
+                  <div className="bg-white p-3 rounded-lg border border-neutral-200 shadow-2xs text-left">
+                    <span className="text-[10px] font-extrabold text-neutral-700 uppercase tracking-wider block mb-2 border-b border-neutral-100 pb-1 w-full">
+                      2. Surat Rekomendasi PPTK
+                    </span>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      <div>
+                        <label className="text-[9px] font-bold text-neutral-450 block mb-0.5">No. Surat PPTK</label>
+                        <input
+                          type="text"
+                          placeholder="Nomor Surat PPTK"
+                          value={formNoSuratPptkUm}
+                          onChange={(e) => setFormNoSuratPptkUm(e.target.value)}
+                          className="w-full text-xs px-2.5 py-1.5 border border-neutral-300 rounded-md outline-none focus:border-blue-500 font-medium bg-neutral-50/30"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-[9px] font-bold text-neutral-450 block mb-0.5">Tanggal Surat PPTK</label>
+                        <input
+                          type="date"
+                          value={formTglSuratPptkUm}
+                          onChange={(e) => setFormTglSuratPptkUm(e.target.value)}
+                          className="w-full text-xs px-2 py-1 border border-neutral-300 rounded-md outline-none focus:border-blue-500 font-mono text-neutral-700 bg-neutral-50/30"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 3. Surat KPA */}
+                  <div className="bg-white p-3 rounded-lg border border-neutral-200 shadow-2xs text-left">
+                    <span className="text-[10px] font-extrabold text-neutral-700 uppercase tracking-wider block mb-2 border-b border-neutral-100 pb-1 w-full">
+                      3. Surat Keputusan KPA
+                    </span>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      <div>
+                        <label className="text-[9px] font-bold text-neutral-450 block mb-0.5">No. Surat KPA</label>
+                        <input
+                          type="text"
+                          placeholder="Nomor Surat KPA"
+                          value={formNoKpaUm}
+                          onChange={(e) => setFormNoKpaUm(e.target.value)}
+                          className="w-full text-xs px-2.5 py-1.5 border border-neutral-300 rounded-md outline-none focus:border-blue-500 font-medium bg-neutral-50/30"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-[9px] font-bold text-neutral-450 block mb-0.5">Tanggal Surat KPA</label>
+                        <input
+                          type="date"
+                          value={formTglKpaUm}
+                          onChange={(e) => setFormTglKpaUm(e.target.value)}
+                          className="w-full text-xs px-2 py-1 border border-neutral-300 rounded-md outline-none focus:border-blue-500 font-mono text-neutral-700 bg-neutral-50/30"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 4. Pernyataan Rekanan */}
+                  <div className="bg-white p-3 rounded-lg border border-neutral-200 shadow-2xs text-left">
+                    <span className="text-[10px] font-extrabold text-neutral-700 uppercase tracking-wider block mb-2 border-b border-neutral-100 pb-1 w-full">
+                      4. Surat Pernyataan Rekanan
+                    </span>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      <div>
+                        <label className="text-[9px] font-bold text-neutral-450 block mb-0.5">No. Pernyataan Rekanan</label>
+                        <input
+                          type="text"
+                          placeholder="Nomor Surat Pernyataan"
+                          value={formNoPernyataanRekananUm}
+                          onChange={(e) => setFormNoPernyataanRekananUm(e.target.value)}
+                          className="w-full text-xs px-2.5 py-1.5 border border-neutral-300 rounded-md outline-none focus:border-blue-500 font-medium bg-neutral-50/30"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-[9px] font-bold text-neutral-450 block mb-0.5">Tanggal Surat</label>
+                        <input
+                          type="date"
+                          value={formTglPernyataanRekananUm}
+                          onChange={(e) => setFormTglPernyataanRekananUm(e.target.value)}
+                          className="w-full text-xs px-2 py-1 border border-neutral-300 rounded-md outline-none focus:border-blue-500 font-mono text-neutral-700 bg-neutral-50/30"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 5. Pernyataan KPA */}
+                  <div className="bg-white p-3 rounded-lg border border-neutral-200 shadow-2xs text-left">
+                    <span className="text-[10px] font-extrabold text-neutral-700 uppercase tracking-wider block mb-2 border-b border-neutral-100 pb-1 w-full">
+                      5. Surat Pernyataan KPA
+                    </span>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      <div>
+                        <label className="text-[9px] font-bold text-neutral-450 block mb-0.5">No. Pernyataan KPA</label>
+                        <input
+                          type="text"
+                          placeholder="Nomor Pernyataan"
+                          value={formNoPernyataanKpaUm}
+                          onChange={(e) => setFormNoPernyataanKpaUm(e.target.value)}
+                          className="w-full text-xs px-2.5 py-1.5 border border-neutral-300 rounded-md outline-none focus:border-blue-500 font-medium bg-neutral-50/30"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-[9px] font-bold text-neutral-450 block mb-0.5">Tanggal Pernyataan</label>
+                        <input
+                          type="date"
+                          value={formTglPernyataanKpaUm}
+                          onChange={(e) => setFormTglPernyataanKpaUm(e.target.value)}
+                          className="w-full text-xs px-2 py-1 border border-neutral-300 rounded-md outline-none focus:border-blue-500 font-mono text-neutral-700 bg-neutral-50/30"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 6. Berita Acara */}
+                  <div className="bg-white p-3 rounded-lg border border-neutral-200 shadow-2xs text-left">
+                    <span className="text-[10px] font-extrabold text-neutral-700 uppercase tracking-wider block mb-2 border-b border-neutral-100 pb-1 w-full">
+                      6. Berita Acara (BA) Uang Muka
+                    </span>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      <div>
+                        <label className="text-[9px] font-bold text-neutral-450 block mb-0.5">No. Berita Acara</label>
+                        <input
+                          type="text"
+                          placeholder="Nomor Berita Acara"
+                          value={formNoBaUm}
+                          onChange={(e) => setFormNoBaUm(e.target.value)}
+                          className="w-full text-xs px-2.5 py-1.5 border border-neutral-300 rounded-md outline-none focus:border-blue-500 font-medium bg-neutral-50/30"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-[9px] font-bold text-neutral-450 block mb-0.5">Tanggal Berita Acara</label>
+                        <input
+                          type="date"
+                          value={formTglBaUm}
+                          onChange={(e) => setFormTglBaUm(e.target.value)}
+                          className="w-full text-xs px-2 py-1 border border-neutral-300 rounded-md outline-none focus:border-blue-500 font-mono text-neutral-700 bg-neutral-50/30"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 7. SPP */}
+                  <div className="bg-white p-3 rounded-lg border border-neutral-200 shadow-2xs text-left">
+                    <span className="text-[10px] font-extrabold text-neutral-700 uppercase tracking-wider block mb-2 border-b border-neutral-100 pb-1 w-full">
+                      7. Surat Permintaan Pembayaran (SPP)
+                    </span>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      <div>
+                        <label className="text-[9px] font-bold text-neutral-450 block mb-0.5">No. SPP</label>
+                        <input
+                          type="text"
+                          placeholder="Nomor Surat SPP"
+                          value={formNoSppUm}
+                          onChange={(e) => setFormNoSppUm(e.target.value)}
+                          className="w-full text-xs px-2.5 py-1.5 border border-neutral-300 rounded-md outline-none focus:border-blue-500 font-medium bg-neutral-50/30"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-[9px] font-bold text-neutral-450 block mb-0.5">Tanggal Surat SPP</label>
+                        <input
+                          type="date"
+                          value={formTglSppUm}
+                          onChange={(e) => setFormTglSppUm(e.target.value)}
+                          className="w-full text-xs px-2 py-1 border border-neutral-300 rounded-md outline-none focus:border-blue-500 font-mono text-neutral-700 bg-neutral-50/30"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 8. Jaminan Uang Muka */}
+                  <div className="p-3 bg-amber-50/50 rounded-lg border border-amber-200 shadow-2xs text-left">
+                    <span className="text-[10px] font-extrabold text-amber-800 uppercase tracking-wider block mb-2 border-b border-amber-200 pb-1 w-full text-left">
+                      8. Surat Jaminan Uang Muka
+                    </span>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      <div>
+                        <label className="text-[9px] font-bold text-amber-900 block mb-0.5">No. Jaminan Uang Muka</label>
+                        <input
+                          type="text"
+                          placeholder="Nomor Surat Jaminan"
+                          value={formNoJaminanUm}
+                          onChange={(e) => setFormNoJaminanUm(e.target.value)}
+                          className="w-full text-xs px-2.5 py-1.5 border border-amber-305 bg-white rounded-md outline-none focus:border-amber-500 font-semibold"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-[9px] font-bold text-amber-900 block mb-0.5">Tanggal Jaminan Uang Muka</label>
+                        <input
+                          type="date"
+                          value={formTglJaminanUm}
+                          onChange={(e) => setFormTglJaminanUm(e.target.value)}
+                          className="w-full text-xs px-2 py-1 border border-amber-305 bg-white rounded-md outline-none focus:border-amber-500 font-mono text-neutral-700"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+
+            {/* Footer buttons */}
+            <div className="bg-neutral-50 px-6 py-4 border-t border-neutral-200 flex justify-between items-center gap-3">
+              <button
+                type="button"
+                onClick={() => {
+                  if (selectedKontrak) {
+                    setFormPersenUm(selectedKontrak.persenUangMuka !== undefined ? selectedKontrak.persenUangMuka : 20);
+                    setFormNoPermohonanUm(selectedKontrak.noPermohonanUm || '');
+                    setFormTglPermohonanUm(selectedKontrak.tglPermohonanUm || '');
+                    setFormNoSuratPptkUm(selectedKontrak.noSuratPptkUm || '');
+                    setFormTglSuratPptkUm(selectedKontrak.tglSuratPptkUm || '');
+                    setFormNoKpaUm(selectedKontrak.noKpaUm || '');
+                    setFormTglKpaUm(selectedKontrak.tglKpaUm || '');
+                    setFormNoPernyataanRekananUm(selectedKontrak.noPernyataanRekananUm || '');
+                    setFormTglPernyataanRekananUm(selectedKontrak.tglPernyataanRekananUm || '');
+                    setFormNoPernyataanKpaUm(selectedKontrak.noPernyataanKpaUm || '');
+                    setFormTglPernyataanKpaUm(selectedKontrak.tglPernyataanKpaUm || '');
+                    setFormNoBaUm(selectedKontrak.noBaUm || '');
+                    setFormTglBaUm(selectedKontrak.tglBaUm || '');
+                    setFormNoSppUm(selectedKontrak.noSppUm || '');
+                    setFormTglSppUm(selectedKontrak.tglSppUm || '');
+                    setFormNoJaminanUm(selectedKontrak.noJaminanUm || '');
+                    setFormTglJaminanUm(selectedKontrak.tglJaminanUm || '');
+                  }
+                }}
+                className="px-4 py-2 border border-neutral-300 rounded-lg text-neutral-600 hover:bg-neutral-100 font-bold hover:text-neutral-900 transition-all cursor-pointer text-xs"
+              >
+                Reset Perubahan
+              </button>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setIsUmModalOpen(false)}
+                  className="px-4 py-2 border border-neutral-200 bg-white hover:bg-neutral-50 text-neutral-700 font-bold rounded-lg transition-all text-xs cursor-pointer"
+                >
+                  Batal
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSaveUangMukaData}
+                  className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold transition-all shadow-md flex items-center gap-1.5 cursor-pointer text-xs"
+                >
+                  <FileCheck className="w-4 h-4" />
+                  <span>Simpan Administrasi Uang Muka</span>
+                </button>
               </div>
             </div>
           </div>
